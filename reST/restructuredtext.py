@@ -16,21 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
-
-try:
-    from gi import pygtkcompat
-except ImportError:
-    pygtkcompat = None
-
-if pygtkcompat is not None:
-    pygtkcompat.enable()
-    pygtkcompat.enable_gtk(version='3.0')
-
-import gtk as Gtk
-try:
-    from gi.repository import WebKit
-except ImportError:
-    import webkit as WebKit
+from gi.repository import Gtk
+from gi.repository import WebKit
 from docutils.core import publish_parts
 from os.path import abspath, dirname, join
 
@@ -62,8 +49,8 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         with open(css_file, 'r') as styles:
             self.styles = styles.read()
 
-        self.set_policy(Gtk.POLICY_NEVER, Gtk.POLICY_AUTOMATIC)
-        self.set_shadow_type(Gtk.SHADOW_NONE)
+        self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.set_shadow_type(Gtk.ShadowType.NONE)
         self.view = WebKit.WebView()
         self.add(self.view)
         self.view.show()
