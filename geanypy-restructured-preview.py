@@ -13,13 +13,18 @@ class ReStructuredTextPlugin(geany.Plugin):
     file_types = ('reStructuredText',)
 
     def __init__(self):
-        signals = ('document-reload', 'document-save', 'document-activate', 'document-close')
+        signals = ('document-reload', 'document-save', 'document-activate', 'document-new')
         self.rest_win = RestructuredtextHtmlPanel()
-        geany.main_widgets.message_window_notebook.append_page(self.rest_win, Gtk.Label(self.name))
+        self.page_num = geany.main_widgets.message_window_notebook.append_page(self.rest_win, Gtk.Label(self.name))
         self.rest_win.show_all()
         for signal in signals:
             geany.signals.connect(signal, self.on_document_notify)
+        geany.signals.connect("editor-notify", self.on_editor_notify)
 
+
+    def cleanup(self):
+        geany.main_widgets.message_window_notebook.remove_page(self.page_num)
+        # self.rest_win.hide_all()
 
     def check_selection_or_filetype(self, doc):
         sci = doc.editor.scintilla
@@ -27,9 +32,8 @@ class ReStructuredTextPlugin(geany.Plugin):
             content = sci.get_contents()
             uri = urlparse.urljoin('file:', doc.file_name)
             return (content.strip(), uri)
-        return ('No ReStructured Text', '')
-        # if sci.has_selection():
-            # return (sci.get_selection_contents(), '')
+        return ('Current Document is not reStructuredText Document', '')
+
 
     def update_window(self, text, uri, doc):
         msgwin = geany.msgwindow
@@ -43,8 +47,18 @@ class ReStructuredTextPlugin(geany.Plugin):
                     doc.editor.indicator_set_on_line(geany.editor.INDICATOR_ERROR, error.line-1)
                     err_msg = '{}:{}:{}'.format(error.type, error.line,  error.message)
                     msgwin.msg_add(err_msg, msgwin.COLOR_RED, error.line, doc)
+            else:
+                geany.main_widgets.message_window_notebook.set_current_page(self.page_num)
         self.rest_win.update_view(text, uri)
 
     def on_document_notify(self, user_data, doc):
         text, uri = self.check_selection_or_filetype(doc)
         self.update_window(text, uri, doc)
+
+    def on_editor_notify(self, g_obj, editor, nt):
+        check = (nt.nmhdr.code == geany.scintilla.MODIFIED and nt.length > 0) \
+                and ((nt.modification_type & geany.scintilla.MOD_INSERT_TEXT) \
+                or (nt.modification_type & geany.scintilla.MOD_DELETE_TEXT))
+        if check:
+            text, uri = self.check_selection_or_filetype(editor.document)
+            self.update_window(text, uri, editor.document)
