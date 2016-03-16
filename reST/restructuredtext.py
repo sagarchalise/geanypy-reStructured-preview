@@ -76,3 +76,9 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
     def clear_view(self):
         self.view.load_string('', self.MIME_TYPE, self.ENCODING, '')
+
+    def clean_destroy(self):
+        # self.clear_view()
+        self.remove(self.view)
+        self.view.destroy()
+        self.destroy()
