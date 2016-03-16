@@ -24,7 +24,7 @@ class ReStructuredTextPlugin(geany.Plugin):
 
     def cleanup(self):
         geany.main_widgets.message_window_notebook.remove_page(self.page_num)
-        # self.rest_win.hide_all()
+        self.rest_win.clean_destroy()
 
     def check_selection_or_filetype(self, doc):
         sci = doc.editor.scintilla
@@ -61,4 +61,4 @@ class ReStructuredTextPlugin(geany.Plugin):
                 or (nt.modification_type & geany.scintilla.MOD_DELETE_TEXT))
         if check:
             text, uri = self.check_selection_or_filetype(editor.document)
-            self.update_window(text, uri, editor.document)
+            self.rest_win.update_view(text, uri)
