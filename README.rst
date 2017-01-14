@@ -15,7 +15,7 @@ Installation
 
 ``docutils``
 
-Copy ``reST`` folder and ``geanypy-restructured-preview.py`` to geanypy plugin folder.
+Copy ``reST`` folder and ``geanypy-restructured-preview.py`` to `$HOME/.config/geany/plugins`.
 
 
 
