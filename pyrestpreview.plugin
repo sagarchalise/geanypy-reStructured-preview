@@ -1,0 +1,7 @@
+[Plugin]
+Module=pyrestpreview
+Loader=python3
+Name=Peasy reStructured Preview
+Description=reStructured Text Preview Panel in message window. 
+Authors=Sagar Chalise <chalisesagar@gmail.com>
+X-Peasy-API=228
