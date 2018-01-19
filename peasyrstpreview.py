@@ -9,12 +9,15 @@ from reST import *
 class ReStructuredTextPlugin(Peasy.Plugin):
     __gtype_name__ = "reStructuredTextPreview"
     file_types = ('reStructuredText',)
+    
+    def __init__(self):
+        self.rest_win = RestructuredtextHtmlPanel()
 
     def do_enable(self):
-        o = self.geany_plugin.geany_data.object
+        geany_data = self.geany_plugin.geany_data
+        o = geany_data.object
         signals = ('document-reload', 'document-save', 'document-activate', 'document-new')
-        self.rest_win = RestructuredtextHtmlPanel()
-        self.notebook = self.geany_plugin.geany_data.main_widgets.message_window_notebook
+        self.notebook = geany_data.main_widgets.message_window_notebook
         self.page_num = self.notebook.append_page(self.rest_win, Gtk.Label('reST Preview'))
         self.rest_win.show_all()
         for signal in signals:
