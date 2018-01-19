@@ -1,5 +1,5 @@
 [Plugin]
-Module=pyrestpreview
+Module=peasyrstpreview
 Loader=python3
 Name=Peasy reStructured Preview
 Description=reStructured Text Preview Panel in message window. 

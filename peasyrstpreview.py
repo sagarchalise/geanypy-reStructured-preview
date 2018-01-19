@@ -20,7 +20,7 @@ class ReStructuredTextPlugin(Peasy.Plugin):
         for signal in signals:
             o.connect(signal, self.on_document_notify)
         o.connect("editor-notify", self.on_editor_notify)
-
+        return True
 
     def do_disable(self):
         self.notebook.remove_page(self.page_num)
