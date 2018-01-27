@@ -34,6 +34,7 @@ class ReStructuredTextPlugin(Peasy.Plugin):
         if doc.file_type.name in self.file_types:
             content = sci.get_contents(sci.get_length()+1)
             uri = urlparse.urljoin('file:', doc.file_name)
+            doc.set_filetype(Geany.filetypes_index(Geany.FiletypeID.FILETYPES_MARKDOWN))
             return (content.strip(), uri)
         return ('Current Document is not reStructuredText Document', '')
 
