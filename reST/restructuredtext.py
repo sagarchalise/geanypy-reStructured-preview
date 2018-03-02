@@ -60,6 +60,9 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.view.load_string(self.TEMPLATE.format(
             body=html, css=self.styles
         ), self.MIME_TYPE, self.ENCODING, base_uri)
+        
+    def update_view_with_uri(self, uri_path):
+        self.view.load_uri(uri_path)
 
     def clear_view(self):
         self.view.load_string('', self.MIME_TYPE, self.ENCODING, '')
