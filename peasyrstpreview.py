@@ -103,17 +103,24 @@ class ReStructuredTextPlugin(Peasy.Plugin):
             #  os.chdir(base)
             cmd = ['sphinx-build', srcdir, builddir]
             try:
-                call = subprocess.check_call(cmd)
-            except:
+                sphinx.main(cmd)
+                #  call = subprocess.check_call(cmd)
+            except Exception as e:
                 #  text, uri = 'OOPS! Sphinxs Issue', urlparse.urljoin('file:', doc.file_name)
-                self.update_window("OOPS! Sphinx Call Issue", doc)
+                self.update_window("OOPS! Sphinx Call Issue\n{}".format(e), doc)
             else:
-                if call != 0:
-                    self.update_window('OOPS! Sphinx Issue', doc)
+                if not os.path.isdir(builddir):
+                    self.update_window('OOPS! No Sphinx Build', doc)
                     return
+                #  if call != 0:
+                    #  self.update_window('OOPS! Sphinx Issue', doc)
+                    #  return
                 hp = rp.replace(srcdir, '')
                 hp = os.path.join(builddir, hp[1:] if hp.startswith('/') else hp)
                 hp = hp.replace('.rst', '.html')
+                if not os.path.isfile(hp):
+                    self.update_window('OOPS! No Sphinx Build', doc)
+                    return
                 self.rest_win.update_view_with_uri('file://'+hp)
                 self.notebook.set_current_page(self.page_num)
         else:
