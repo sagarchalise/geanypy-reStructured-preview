@@ -11,11 +11,10 @@ availble  yet.
 Installation
 ~~~~~~~~~~~~
 
-``Geanypy``
+`Peasy <https://github.com/kugel-/peasy>`_
 
-``pywebkitgtk``
 
-``docutils``
+Gobject Instrospection.
 
 Copy ``reST`` folder and ``geanypy-restructured-preview.py`` to geanypy plugin folder.
 
@@ -24,7 +23,7 @@ Copy ``reST`` folder and ``geanypy-restructured-preview.py`` to geanypy plugin f
 **On ubuntu**:
 
 
-``sudo apt-get install python-docutils python-pygments python-webkit``
+``sudo apt-get install python-docutils gir1.2-webkit-3.0 python-pygments``
 
 
 
