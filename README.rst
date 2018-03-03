@@ -6,6 +6,8 @@ This plugin provides a preview pane for reStructured Text editing in geany.
 Since scintilla doesnot support highlighting reStrucutured Text no highlighting is
 availble  yet.
 
+***Experimental*** ``sphinx`` doc support based on practices of my own.
+
 Installation
 ~~~~~~~~~~~~
 

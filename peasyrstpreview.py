@@ -13,10 +13,16 @@ except ImportError:
     sphinx = None
 
 def check_for_sphinx(filedir):
+    """Check for sphinx based on dir and stop if it nears home.
+    Args:
+        filedir(str): path of open doc
+    """
     if not sphinx:
         return '', False
     conf = os.path.join(filedir, 'conf.py')
     if not os.path.isfile(conf):
+        if len(filedir.split('/')) <= 3:
+            return '', False
         return check_for_sphinx(os.path.dirname(filedir))
     #  extensions = {}
     try:
@@ -69,24 +75,26 @@ class ReStructuredTextPlugin(Peasy.Plugin):
         #  Geany.msgwin_clear_tab(Geany.MessageWindowTabNum.MESSAGE)
         #  doc.editor.indicator_clear(Geany.Indicator.ERROR)
         if doc.file_type.name in self.file_types:
-            errors = check_for_errors(text, uri)
-            if errors:
-                pass
+            #  errors = check_for_errors(text, uri)
+            #  if errors:
+                #  pass
                 #  Geany.msgwin_switch_tab(Geany.MessageWindowTabNum.MESSAGE, True)
                 #  for error in errors:
                     #  doc.editor.indicator_set_on_line(Geany.Indicator.ERROR, error.line-1)
                     #  err_msg = '{}:{}:{}'.format(error.type, error.line,  error.message)
                     #  Geany.msgwin_msg_add(err_msg, Geany.MsgColors.RED, error.line, doc)
-            else:
-               self.notebook.set_current_page(self.page_num)
+            #  else:
+            self.notebook.set_current_page(self.page_num)
         self.rest_win.update_view(text, uri)
 
     def on_document_notify(self, user_data, doc):
         srcdir = None
         rp = doc.real_path
         if sphinx and rp:
+            """ Check sphinx conf in file open directory and move up. """
             srcdir, self.is_sphinx = check_for_sphinx(os.path.dirname(rp))
         if self.is_sphinx and srcdir:
+            """ Sphinx Conf found then use sphinx source and build parallel directory. """
             if doc.file_type.name not in self.file_types:
                 self.update_window('Current Document is not reStructuredText Document', doc)
                 return
@@ -98,10 +106,11 @@ class ReStructuredTextPlugin(Peasy.Plugin):
                 call = subprocess.check_call(cmd)
             except:
                 #  text, uri = 'OOPS! Sphinxs Issue', urlparse.urljoin('file:', doc.file_name)
-                self.update_window('OOPS! Sphinx Issue', doc)
+                self.update_window("OOPS! Sphinx Call Issue", doc)
             else:
-                if cmd != 0:
+                if call != 0:
                     self.update_window('OOPS! Sphinx Issue', doc)
+                    return
                 hp = rp.replace(srcdir, '')
                 hp = os.path.join(builddir, hp[1:] if hp.startswith('/') else hp)
                 hp = hp.replace('.rst', '.html')
