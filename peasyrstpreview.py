@@ -1,10 +1,8 @@
 import os
 import runpy
-import subprocess
 from urllib import parse as urlparse
 from gi.repository import Gtk
 from gi.repository import Geany
-from gi.repository import GeanyScintilla
 from gi.repository import Peasy
 from reST import *
 try:
@@ -38,9 +36,8 @@ def check_for_sphinx(filedir):
     
 class ReStructuredTextPlugin(Peasy.Plugin):
     __gtype_name__ = "reStructuredTextPreview"
-    file_types = ('reStructuredText',)
     is_sphinx = False
-    
+
     def __init__(self):
         self.rest_win = RestructuredtextHtmlPanel()
 
@@ -60,21 +57,14 @@ class ReStructuredTextPlugin(Peasy.Plugin):
         self.notebook.remove_page(self.page_num)
         self.rest_win.clean_destroy()
 
-    def check_selection_or_filetype(self, doc):
-        sci = doc.editor.sci
-        if doc.file_type.name in self.file_types:
-            content = sci.get_contents(sci.get_length()+1)
-            #  uri = urlparse.urljoin('file:', doc.file_name)
-            #  doc.set_filetype(Geany.filetypes_index(Geany.FiletypeID.FILETYPES_MARKDOWN))
-            return content.strip()
-        return 'Current Document is not reStructuredText Document'
-
-
-    def update_window(self, text, doc):
+    def update_window(self, doc):
         uri = urlparse.urljoin('file:', doc.file_name)
         #  Geany.msgwin_clear_tab(Geany.MessageWindowTabNum.MESSAGE)
         #  doc.editor.indicator_clear(Geany.Indicator.ERROR)
-        if doc.file_type.name in self.file_types:
+        if doc.file_type.id == Geany.FiletypeID.FILETYPES_REST:
+            sci = doc.editor.sci
+            content = sci.get_contents(sci.get_length()+1)
+            text = content.strip()
             #  errors = check_for_errors(text, uri)
             #  if errors:
                 #  pass
@@ -85,6 +75,8 @@ class ReStructuredTextPlugin(Peasy.Plugin):
                     #  Geany.msgwin_msg_add(err_msg, Geany.MsgColors.RED, error.line, doc)
             #  else:
             self.notebook.set_current_page(self.page_num)
+        else:
+            text = 'Current Document is not reStructuredText Document'
         self.rest_win.update_view(text, uri)
 
     def on_document_notify(self, user_data, doc):
@@ -95,43 +87,37 @@ class ReStructuredTextPlugin(Peasy.Plugin):
             srcdir, self.is_sphinx = check_for_sphinx(os.path.dirname(rp))
         if self.is_sphinx and srcdir:
             """ Sphinx Conf found then use sphinx source and build parallel directory. """
-            if doc.file_type.name not in self.file_types:
-                self.update_window('Current Document is not reStructuredText Document', doc)
+            if doc.file_type.id != Geany.FiletypeID.FILETYPES_REST:
+                self.update_window(doc)
                 return
             base = os.path.dirname(srcdir)
             builddir = os.path.join(base, 'build')
-            #  os.chdir(base)
-            cmd = ['sphinx-build', srcdir, builddir]
+            cmd = [srcdir, builddir]
             try:
                 sphinx.main(cmd)
-                #  call = subprocess.check_call(cmd)
             except Exception as e:
-                #  text, uri = 'OOPS! Sphinxs Issue', urlparse.urljoin('file:', doc.file_name)
-                self.update_window("OOPS! Sphinx Call Issue\n{}".format(e), doc)
+                self.rest_win.update_view("OOPS! Sphinx Call Issue\n{}".format(e), "file:///hhh")
             else:
                 if not os.path.isdir(builddir):
-                    self.update_window('OOPS! No Sphinx Build', doc)
+                    self.rest_win.update_view('OOPS! No Sphinx Build', "file:///hhh")
                     return
-                #  if call != 0:
-                    #  self.update_window('OOPS! Sphinx Issue', doc)
-                    #  return
                 hp = rp.replace(srcdir, '')
                 hp = os.path.join(builddir, hp[1:] if hp.startswith('/') else hp)
                 hp = hp.replace('.rst', '.html')
                 if not os.path.isfile(hp):
-                    self.update_window('OOPS! No Sphinx Build', doc)
+                    self.rest_win.update_window('OOPS! No Sphinx Build', 'file:///hhh')
                     return
-                self.rest_win.update_view_with_uri('file://'+hp)
+                self.rest_win.update_view_with_uri(urlparse.urljoin('file:', hp))
                 self.notebook.set_current_page(self.page_num)
         else:
-            text = self.check_selection_or_filetype(doc)
-            self.update_window(text, doc)
+            self.update_window(doc)
 
     def on_editor_notify(self, g_obj, editor, nt):
-        check = (nt.nmhdr.code == GeanyScintilla.SCN_MODIFIED and nt.length > 0) \
-                and ((nt.modificationType & GeanyScintilla.SC_MOD_INSERTTEXT) \
-                or (nt.modificationType & GeanyScintilla.SC_MOD_DELETETEXT))
-        if check and not self.is_sphinx:
-            text = self.check_selection_or_filetype(editor.document)
-            self.update_window(text, editor.document)
-            #  self.rest_win.update_view(text, )
+        pass
+        #  check = (nt.nmhdr.code == GeanyScintilla.SCN_MODIFIED and nt.length > 0) \
+                #  and ((nt.modificationType & GeanyScintilla.SC_MOD_INSERTTEXT) \
+                #  or (nt.modificationType & GeanyScintilla.SC_MOD_DELETETEXT))
+        #  doc = editor.document
+        #  if check and doc.file_type.name in self.file_types and not self.is_sphinx:
+            #  text = self.check_selection_or_filetype(editor.document)
+            #  self.update_window(text, editor.document)
