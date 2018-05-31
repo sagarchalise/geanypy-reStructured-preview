@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 from gi.repository import Gtk
-from gi.repository import WebKit
+try:
+    from gi.repository import WebKit2 as WebKit
+except ImportError:
+    from gi.repository import WebKit
 from docutils.core import publish_parts
 from os.path import abspath, dirname, join
 
@@ -55,20 +58,23 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.add(self.view)
         self.view.show()
 
+    def load_content(self, content, base_uri=''):
+        try:
+            self.view.load_html(content, base_uri)
+        except AttributeError:
+            self.view.load_string(content, self.MIME_TYPE, self.ENCODING, base_uri)
+
     def update_view(self, text, base_uri):
         html = publish_parts(text, writer_name='html')['html_body']
-        self.view.load_string(self.TEMPLATE.format(
-            body=html, css=self.styles
-        ), self.MIME_TYPE, self.ENCODING, base_uri)
-        
+        content = self.TEMPLATE.format(body=html, css=self.styles)
+        self.load_content(content, base_uri)
+
     def update_view_with_uri(self, uri_path):
         self.view.load_uri(uri_path)
 
     def clear_view(self):
-        self.view.load_string('', self.MIME_TYPE, self.ENCODING, '')
-
+        self.load_content('')
 
     def clean_destroy(self):
         self.remove(self.view)
-        # self.view.destroy()
         self.destroy()

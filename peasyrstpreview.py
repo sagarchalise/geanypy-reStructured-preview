@@ -1,10 +1,15 @@
 import os
+import sys
 import runpy
 from urllib import parse as urlparse
 from gi.repository import Gtk
 from gi.repository import Geany
 from gi.repository import Peasy
-from reST import *
+try:
+    from reST import *
+except ImportError as e:
+    print("No modules", e)
+    sys.exit(0)
 try:
     import sphinx
 except ImportError:
@@ -33,7 +38,7 @@ def check_for_sphinx(filedir):
         if extensions and any('sphinx' in k for k in extensions):
             return filedir, True
     return '', False
-    
+
 class ReStructuredTextPlugin(Peasy.Plugin):
     __gtype_name__ = "reStructuredTextPreview"
     is_sphinx = False
