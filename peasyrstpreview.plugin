@@ -2,6 +2,6 @@
 Module=peasyrstpreview
 Loader=python3
 Name=Peasy reStructured Preview
-Description=reStructured Text Preview Panel in message window. 
-Authors=Sagar Chalise <chalisesagar@gmail.com>
+Description=reStructured Text Preview Panel in message window.
+Authors=Sagar Chalise <chalisesagarATgmailDOTcom>
 X-Peasy-API=228
