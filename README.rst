@@ -1,5 +1,4 @@
-
-:warning: **If you are already using [Peasy](https://github.com/kugel-/peasy) then [this](https://github.com/sagarchalise/geanypy-reStructured-preview/tree/peasy) branch is RECOMMENDED.**
+**:warning: If you are already using https://github.com/kugel-/peasy then using https://github.com/sagarchalise/geanypy-reStructured-preview/tree/peasy is RECOMMENDED.**
 
 Geany Plugin for reStructured Text
 ==================================
