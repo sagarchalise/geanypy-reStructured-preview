@@ -1,10 +1,9 @@
 import os
-import sys
 import runpy
+import sys
 from urllib import parse as urlparse
-from gi.repository import Gtk
-from gi.repository import Geany, GeanyScintilla
-from gi.repository import Peasy
+
+from gi.repository import Geany, GeanyScintilla, Gtk, Peasy
 
 try:
     from reST import RestructuredtextHtmlPanel, check_for_errors
@@ -85,7 +84,7 @@ class ReStructuredTextPlugin(Peasy.Plugin):
             text = content.strip()
             errors = errors and check_for_errors(text, uri)
             if errors:
-                Geany.msgwin_switch_tab(Geany.MessageWindowTabNum.MESSAGE, True)
+                #  Geany.msgwin_switch_tab(Geany.MessageWindowTabNum.MESSAGE, True)
                 for error in errors:
                     doc.editor.indicator_set_on_line(Geany.Indicator.ERROR, error.line - 1)
                     err_msg = "{}:{}:{}".format(error.type, error.line, error.message)
